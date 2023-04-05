@@ -1,4 +1,4 @@
-module testbench();
+module kuznechik_chipher_tb();
 
     logic [127:0] data_to_cipher [11];
     logic [127:0] ciphered_data  [11];

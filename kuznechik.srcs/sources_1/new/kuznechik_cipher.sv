@@ -1,13 +1,16 @@
 module kuznechik_cipher(
-    input               clk_i,
-                        resetn_i,
-                        request_i,
-                        ack_i,
-                [127:0] data_i,
+    input               clk_i,      // Clock signal
+                        resetn_i,   // Synchronous reset signal with low level active
+                        request_i,  // Encryption start request signal
+                        ack_i,      // Encrypted data reception acknowledgement signal
+                [127:0] data_i,     // Encrypted data
 
-    output              busy_o,
-           reg          valid_o,
-           reg  [127:0] data_o
+    output              busy_o,     // A signal informing about the impossibility to accept
+                                    // the next encryption request because
+                                    // module is in the process of encrypting the previous
+                                    // request
+           reg          valid_o,    // Encrypted data readiness signal
+           reg  [127:0] data_o      // Encrypted data
 );
 
   reg [127:0] key_mem [0:9];
@@ -72,7 +75,11 @@ module kuznechik_cipher(
   logic       data_galua_sel;         // 0 - input from S_PHASE,
                                       // 1 - input from shift_reg L_PHASE
 
-  // Stub! Shift register should be added here
+
+  logic [7:0] data_galua_shreg_ff   [15:0];
+  logic [7:0] data_galua_shreg_next [15:0];
+  logic       data_galua_shreg_en;
+
   assign data_galua_in = data_galua_sel ? data_linear_result : data_galua_shreg_ff;
 
   logic [7:0] data_galua_result [15:0];
@@ -96,10 +103,6 @@ module kuznechik_cipher(
   assign data_galua_result[0]   =                data_galua_in[0] ;
 
   logic [7:0] galua_summ;
-
-  logic [7:0] data_galua_shreg_ff   [15:0];
-  logic [7:0] data_galua_shreg_next [15:0];
-  logic       data_galua_shreg_en;
 
   generate;
 
