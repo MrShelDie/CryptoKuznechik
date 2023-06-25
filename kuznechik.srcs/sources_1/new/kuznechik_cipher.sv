@@ -1,16 +1,16 @@
 module kuznechik_cipher(
     input               clk_i,      // Clock signal
-                        resetn_i,   // Synchronous reset signal with low level active
-                        request_i,  // Encryption start request signal
-                        ack_i,      // Encrypted data reception acknowledgement signal
-                [127:0] data_i,     // Encrypted data
+    input               resetn_i,   // Synchronous reset signal with low level active
+    input               request_i,  // Encryption start request signal
+    input               ack_i,      // Encrypted data reception acknowledgement signal
+    input       [127:0] data_i,     // Encrypted data
 
     output              busy_o,     // A signal informing about the impossibility to accept
                                     // the next encryption request because
                                     // module is in the process of encrypting the previous
                                     // request
-           reg          valid_o,    // Encrypted data readiness signal
-           reg  [127:0] data_o      // Encrypted data
+    output reg          valid_o,    // Encrypted data readiness signal
+    output reg  [127:0] data_o      // Encrypted data
 );
 
   reg [127:0] key_mem [0:9];
@@ -160,7 +160,7 @@ module kuznechik_cipher(
   // state_ff
   always_ff @(posedge clk_i or negedge resetn_i) begin
     if (~resetn_i)
-      state_ff = IDLE;
+      state_ff <= IDLE;
     else if ((state_ff == IDLE || state_ff == FINISH) && request_i)
       state_ff <= KEY_PHASE;
     else if (state_ff == FINISH && ack_i)
